@@ -33,28 +33,42 @@ app.use(
   })
 );
 
-// 2. Strict CORS Configuration
-const allowedOrigins = [
-  corsOrigin,
+// 2. Comprehensive CORS Configuration
+const envOrigins = (corsOrigin || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const defaultAllowedOrigins = [
+  ...envOrigins,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
-].filter(Boolean);
+  'http://localhost:5000',
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, health checks)
       if (!origin) return callback(null, true);
+
+      // In development or test, allow all localhost and matching origins
       if (!isProduction) {
-        // In development/test, allow localhost ports and matching origins
-        if (origin.includes('localhost') || origin.includes('127.0.0.1') || allowedOrigins.includes(origin)) {
+        if (origin.includes('localhost') || origin.includes('127.0.0.1') || defaultAllowedOrigins.includes(origin)) {
           return callback(null, true);
         }
       }
-      if (allowedOrigins.includes(origin)) {
+
+      // Check configured origins or any Vercel deployment preview / production domain
+      if (
+        defaultAllowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com')
+      ) {
         return callback(null, true);
       }
+
       return callback(new Error(`CORS policy rejection: Origin ${origin} is not authorized`));
     },
     credentials: true,

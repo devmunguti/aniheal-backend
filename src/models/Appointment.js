@@ -57,6 +57,15 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    appointmentType: {
+      type: String,
+      enum: ['farm_visit', 'office_visit'],
+      default: 'farm_visit',
+    },
+    assignedHub: {
+      type: String,
+      default: '',
+    },
     dispatchTier: {
       type: String,
       enum: ['emergency', 'morning', 'afternoon', 'standard'],

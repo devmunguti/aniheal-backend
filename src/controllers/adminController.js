@@ -210,8 +210,21 @@ const getAllServicesAdmin = async (req, res, next) => {
 
 const createService = async (req, res, next) => {
   try {
-    const slug = req.body.slug || req.body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    const service = await Service.create({ ...req.body, slug });
+    let baseSlug = (req.body.slug || req.body.title || 'clinical-service')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+    let slug = baseSlug;
+    const existing = await Service.findOne({ slug });
+    if (existing) {
+      slug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    const service = await Service.create({
+      ...req.body,
+      name: req.body.name || req.body.title,
+      slug,
+    });
 
     await logAction({
       req,
@@ -343,7 +356,20 @@ const getAllTeamMembersAdmin = async (req, res, next) => {
 
 const createTeamMember = async (req, res, next) => {
   try {
-    const slug = req.body.slug || req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    let baseSlug = (req.body.slug || req.body.name || 'specialist')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+    let slug = baseSlug;
+    const existing = await TeamMember.findOne({ slug });
+    if (existing) {
+      slug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    if (req.body.isDirector) {
+      await TeamMember.updateMany({}, { isDirector: false });
+    }
+
     const member = await TeamMember.create({ ...req.body, slug });
 
     await logAction({
@@ -362,6 +388,10 @@ const createTeamMember = async (req, res, next) => {
 
 const updateTeamMember = async (req, res, next) => {
   try {
+    if (req.body.isDirector) {
+      await TeamMember.updateMany({ _id: { $ne: req.params.id } }, { isDirector: false });
+    }
+
     const member = await TeamMember.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true, runValidators: true });
     if (!member) return sendError(res, 'Team member not found', 404);
 

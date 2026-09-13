@@ -5,7 +5,7 @@ const mediaController = require('../controllers/mediaController');
 const { authenticate, authorize } = require('../middleware/authMiddleware');
 
 router.use(authenticate);
-router.use(authorize('superadmin', 'editor'));
+router.use(authorize('superadmin', 'admin', 'editor'));
 
 router.post('/upload', upload.single('file'), mediaController.uploadMedia);
 router.get('/', mediaController.getAllMedia);

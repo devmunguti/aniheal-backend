@@ -28,6 +28,8 @@ const createAppointment = async (req, res, next) => {
     const dispatchTier = allowedTiers.includes(rawTier) ? rawTier : 'morning';
     const preferredDate = req.body.preferredDate || req.body.visitDate || '';
     const symptomsDescription = (req.body.symptomsDescription || req.body.clinicalNotes || req.body.messageText || '').trim();
+    const appointmentType = req.body.appointmentType === 'office_visit' ? 'office_visit' : 'farm_visit';
+    const assignedHub = (req.body.assignedHub || '').trim();
     const mediaUrls = Array.isArray(req.body.mediaUrls) ? req.body.mediaUrls : [];
 
     const missingFields = [];
@@ -59,6 +61,8 @@ const createAppointment = async (req, res, next) => {
       landmarks,
       gpsCoordinates,
       speciesType,
+      appointmentType,
+      assignedHub,
       totalHeadcount: isNaN(totalHeadcount) ? 1 : totalHeadcount,
       affectedCount: isNaN(affectedCount) ? 1 : affectedCount,
       clinicalService,

@@ -7,6 +7,7 @@ const TeamMember = require('../models/TeamMember');
 const Hub = require('../models/Hub');
 const FAQ = require('../models/FAQ');
 const ResearchItem = require('../models/ResearchItem');
+const Collaboration = require('../models/Collaboration');
 
 const runSeed = async () => {
   try {
@@ -668,6 +669,56 @@ const runSeed = async () => {
           isPublished: true,
         },
       ]);
+    }
+
+    // 10. Collaborations & Partnerships
+    const collabCount = await Collaboration.countDocuments();
+    if (collabCount === 0) {
+      await Collaboration.insertMany([
+        {
+          header: 'One Health Zoonotic Surveillance with ILRI & KVB',
+          slug: 'one-health-zoonotic-surveillance-ilri',
+          partnerName: 'International Livestock Research Institute (ILRI) & Kenya Veterinary Board',
+          category: 'One Health Research',
+          imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+          summary:
+            'AniHeal has partnered with ILRI to deploy mobile point-of-care PCR diagnostics and surveillance for Brucellosis, Rift Valley Fever, and Anthrax across pastoral hubs in Rift Valley and Northern Kenya.',
+          content: `Strengthening East Africa's One Health Defense. The interface between livestock, wildlife, and human populations across Kenya presents critical zoonotic disease surveillance challenges. In partnership with ILRI and KVB, AniHeal has rolled out an integrated field surveillance initiative.`,
+          externalUrl: 'https://www.ilri.org',
+          featured: true,
+          status: 'published',
+          tags: ['One Health', 'Zoonosis', 'ILRI', 'AMR Surveillance', 'KVB'],
+        },
+        {
+          header: 'Dairy Yield Optimization & Cold Chain Alliance with Kenya Dairy Board',
+          slug: 'dairy-yield-optimization-kdb-alliance',
+          partnerName: 'Kenya Dairy Board & Central Kenya Dairy Farmers Cooperative',
+          category: 'Livestock & Dairy Sector',
+          imageUrl: 'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?auto=format&fit=crop&w=1200&q=80',
+          summary:
+            'A strategic collaborative initiative reducing subclinical mastitis incidence by 38% through digitized udder health scoring, farm-gate bulk milk somatic cell counts, and nutrition formulation.',
+          content: `Revolutionizing Smallholder Dairy Economics. Subclinical mastitis remains a large hidden financial drain for commercial and smallholder dairy farmers. Through collaboration with KDB, AniHeal instituted the Clean Milk & High Yield Protocol.`,
+          externalUrl: 'https://www.kdb.go.ke',
+          featured: true,
+          status: 'published',
+          tags: ['Dairy', 'Mastitis', 'Kenya Dairy Board', 'Nutrition'],
+        },
+        {
+          header: 'Veterinary Clinical Residency & Field Training with Egerton & UoN',
+          slug: 'veterinary-clinical-residency-egerton-uon',
+          partnerName: 'Egerton University Faculty of Veterinary Medicine & University of Nairobi',
+          category: 'Academic & Training',
+          imageUrl: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
+          summary:
+            'Hands-on ambulatory clinical rotations for senior veterinary students, immersing interns in ultrasonography, herd health triage, equine dental prophylaxis, and surgical emergency response.',
+          content: `Nurturing the Next Generation of Field Clinicians. Bridging academic veterinary theory with rigorous field practice is essential for building resilient animal healthcare systems.`,
+          externalUrl: 'https://www.egerton.ac.ke',
+          featured: false,
+          status: 'published',
+          tags: ['Veterinary Training', 'Residency', 'Egerton', 'UoN'],
+        },
+      ]);
+      console.log('✔ Default initial Collaborations seeded');
     }
 
     return true;

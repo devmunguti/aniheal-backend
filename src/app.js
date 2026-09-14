@@ -41,6 +41,8 @@ const envOrigins = (corsOrigin || '')
 
 const defaultAllowedOrigins = [
   ...envOrigins,
+  'https://aniheal-frontend.vercel.app',
+  'https://www.aniheal-frontend.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:3000',
@@ -121,6 +123,19 @@ const healthHandler = (req, res) => {
     timestamp: new Date().toISOString(),
   });
 };
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'AniHeal Backend API Service',
+    message: 'Backend API is running smoothly.',
+    health: '/health',
+    endpoints: {
+      health: '/api/health',
+      public: '/api/public',
+    },
+  });
+});
 
 app.get('/health', healthHandler);
 app.get('/api/health', healthHandler);

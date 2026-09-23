@@ -6,6 +6,7 @@ const Animal = require('../models/Animal');
 const Payment = require('../models/Payment');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAction } = require('../services/auditService');
+const emailService = require('../services/emailService');
 
 const generatePolicyNumber = () => {
   const rand = Math.floor(10000 + Math.random() * 90000);
@@ -114,6 +115,25 @@ const submitSubscriptionApplication = async (req, res, next) => {
         plan: resolvedPlan.name,
       },
     });
+
+    // 1. Send receipt email to applicant (if email provided)
+    if (subscription.applicantEmail) {
+      emailService
+        .sendInsuranceSubscriptionEmail({
+          to: subscription.applicantEmail,
+          subscription,
+          planName: resolvedPlan.name,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendInsuranceSubscriptionEmail:', err.message));
+    }
+
+    // 2. Send internal alert to underwriting desk
+    emailService
+      .sendInsuranceInternalAlertEmail({
+        subscription,
+        planName: resolvedPlan.name,
+      })
+      .catch((err) => console.error('[EMAIL ERROR] sendInsuranceInternalAlertEmail:', err.message));
 
     return sendSuccess(
       res,
@@ -434,6 +454,20 @@ const convertSubscriptionToPolicy = async (req, res, next) => {
         animalTag: animal.tagOrChipId,
       },
     });
+
+    // Send official certificate of insurance email to owner/applicant
+    const targetOwnerEmail = owner.email || subscription.applicantEmail;
+    if (targetOwnerEmail) {
+      emailService
+        .sendInsurancePolicyActivatedEmail({
+          to: targetOwnerEmail,
+          policy,
+          owner,
+          animal,
+          plan: subscription.insurancePlan,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendInsurancePolicyActivatedEmail:', err.message));
+    }
 
     return sendSuccess(res, { policy, animal, owner }, 'Policy activated and animal enrolled successfully', 201);
   } catch (err) {

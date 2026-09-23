@@ -67,11 +67,31 @@ const websiteSettingsSchema = new mongoose.Schema(
       facebook: { type: String, default: '#' },
       twitter: { type: String, default: '#' },
       instagram: { type: String, default: '#' },
+      linkedin: { type: String, default: '#' },
+      youtube: { type: String, default: '#' },
+      tiktok: { type: String, default: '#' },
       whatsapp: { type: String, default: 'https://wa.me/254700264432' },
     },
     operatingHours: {
       weekday: { type: String, default: 'Mon–Sat 07:00–18:00' },
       emergency: { type: String, default: '24/7 Emergency Response' },
+    },
+    notificationEmails: {
+      triageAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
+      orderAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
+      insuranceAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
     },
     metaTitle: {
       type: String,

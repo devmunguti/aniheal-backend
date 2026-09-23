@@ -33,6 +33,23 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+    otpCode: {
+      type: String,
+      select: false,
+    },
+    otpExpiresAt: {
+      type: Date,
+      select: false,
+    },
+    otpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    mustChangePassword: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -19,6 +19,12 @@ const config = {
       process.env.CLOUDINARY_API_SECRET
     ),
   },
+  resend: {
+    apiKey: process.env.RESEND_API_KEY || '',
+    fromEmail: process.env.RESEND_FROM_EMAIL || 'AniHeal Security <auth@aniheal.co.ke>',
+    fallbackFromEmail: process.env.RESEND_FALLBACK_FROM || 'AniHeal <onboarding@resend.dev>',
+    isConfigured: !!(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_xxxxxxxxx'),
+  },
 };
 
 // Validate production secrets

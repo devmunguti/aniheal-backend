@@ -38,15 +38,18 @@ const seedData = async () => {
 
     // 1. SuperAdmin User
     console.log('Seeding SuperAdmin user...');
-    await User.deleteMany({ email: 'admin@aniheal.co.ke' });
-    await User.create({
-      name: 'Dr. AniHeal SuperAdmin',
-      email: 'admin@aniheal.co.ke',
-      password: 'AniHeal2025!', // will be hashed by pre-save hook
-      role: 'superadmin',
-      isActive: true,
-    });
-    console.log(' SuperAdmin created: admin@aniheal.co.ke / AniHeal2025!');
+    await User.deleteMany({ email: { $in: ['admin@aniheal.co.ke', 'karushopstore@gmail.com', 'hello.aniheal@gmail.com'] } });
+    await User.create([
+      {
+        name: 'AniHeal SuperAdmin',
+        email: 'hello.aniheal@gmail.com',
+        password: 'password123',
+        role: 'superadmin',
+        isActive: true,
+        mustChangePassword: true,
+      },
+    ]);
+    console.log('✔ SuperAdmin created: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
 
     // 2. Global Website Settings
     console.log('Seeding Website Settings...');
@@ -882,9 +885,9 @@ const seedData = async () => {
     // 13. Sample Vet Daily Clinical Logs
     console.log('Seeding Vet Clinical Logs...');
     await VetLog.deleteMany({});
-    const adminUser = await User.findOne({ email: 'admin@aniheal.co.ke' });
+    const adminUser = await User.findOne({ email: 'hello.aniheal@gmail.com' }) || await User.findOne({});
     await VetLog.create({
-      vetUser: adminUser._id,
+      vetUser: adminUser?._id,
       vetName: 'Dr. Joseph Ndungu (BVM)',
       owner: sampleOwner._id,
       farmerName: sampleOwner.name,

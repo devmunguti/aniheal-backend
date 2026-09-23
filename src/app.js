@@ -77,10 +77,10 @@ app.use(
   })
 );
 
-// 3. Rate Limiting (10 requests per 15 minutes window)
+// 3. Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 requests per 15 minutes
+  max: nodeEnv === 'test' ? 500 : 30, // Relaxed for automated test runs
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many authentication attempts from this IP. Please try again in 15 minutes.' },
@@ -88,7 +88,7 @@ const authLimiter = rateLimit({
 
 const submissionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 40, // 40 submissions per IP
+  max: nodeEnv === 'test' ? 500 : 60,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests submitted from this IP. Please try again later.' },

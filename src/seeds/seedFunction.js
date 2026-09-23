@@ -12,16 +12,24 @@ const Collaboration = require('../models/Collaboration');
 const runSeed = async () => {
   try {
     // 1. SuperAdmin User
-    const existingAdmin = await User.findOne({ email: 'admin@aniheal.co.ke' });
-    if (!existingAdmin) {
+    let superAdmin = await User.findOne({ email: 'hello.aniheal@gmail.com' });
+    if (!superAdmin) {
       await User.create({
-        name: 'Dr. AniHeal SuperAdmin',
-        email: 'admin@aniheal.co.ke',
-        password: 'AniHeal2025!',
+        name: 'AniHeal SuperAdmin',
+        email: 'hello.aniheal@gmail.com',
+        password: 'password123',
         role: 'superadmin',
         isActive: true,
+        mustChangePassword: true,
       });
-      console.log('✔ SuperAdmin created: admin@aniheal.co.ke / AniHeal2025!');
+      console.log('✔ SuperAdmin created: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
+    } else {
+      superAdmin.password = 'password123';
+      superAdmin.role = 'superadmin';
+      superAdmin.isActive = true;
+      superAdmin.mustChangePassword = true;
+      await superAdmin.save();
+      console.log('✔ SuperAdmin updated: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
     }
 
     // 2. Settings

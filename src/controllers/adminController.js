@@ -18,6 +18,7 @@ const VetLog = require('../models/VetLog');
 const Collaboration = require('../models/Collaboration');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAction } = require('../services/auditService');
+const { sendAccountCreatedEmail } = require('../services/emailService');
 
 // --- 1. DASHBOARD OVERVIEW STATS ---
 const getDashboardStats = async (req, res, next) => {
@@ -127,6 +128,18 @@ const updateSettings = async (req, res, next) => {
     if (!settings) {
       settings = new WebsiteSettings(req.body);
     } else {
+      if (req.body.socialLinks && typeof req.body.socialLinks === 'object') {
+        settings.socialLinks = {
+          ...(settings.socialLinks?.toObject?.() || settings.socialLinks || {}),
+          ...req.body.socialLinks,
+        };
+      }
+      if (req.body.notificationEmails && typeof req.body.notificationEmails === 'object') {
+        settings.notificationEmails = {
+          ...(settings.notificationEmails?.toObject?.() || settings.notificationEmails || {}),
+          ...req.body.notificationEmails,
+        };
+      }
       Object.assign(settings, req.body);
     }
     await settings.save();
@@ -572,18 +585,21 @@ const getAllUsersAdmin = async (req, res, next) => {
 
 const createUserAdmin = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, mustChangePassword } = req.body;
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
       return sendError(res, 'A user with this email already exists', 400);
     }
 
+    const tempPassword = password || 'AniHealStaff2025!';
+
     const user = await User.create({
       name,
       email,
-      password,
+      password: tempPassword,
       role: role || 'editor',
       isActive: true,
+      mustChangePassword: mustChangePassword !== undefined ? mustChangePassword : true,
     });
 
     const userObj = user.toObject();
@@ -597,7 +613,21 @@ const createUserAdmin = async (req, res, next) => {
       details: { email: user.email, role: user.role },
     });
 
-    return sendSuccess(res, userObj, 'User created successfully', 201);
+    // Send account creation email with temporary credentials via Resend
+    const portalUrl = req.headers.origin
+      ? `${req.headers.origin}/admin/login`
+      : 'https://aniheal.co.ke/admin/login';
+
+    sendAccountCreatedEmail({
+      to: user.email,
+      name: user.name,
+      email: user.email,
+      tempPassword,
+      role: user.role,
+      portalUrl,
+    }).catch((err) => console.error('[EMAIL SEND ERROR]:', err.message));
+
+    return sendSuccess(res, userObj, 'Administrator created and credentials dispatched via email', 201);
   } catch (err) {
     next(err);
   }
@@ -605,7 +635,7 @@ const createUserAdmin = async (req, res, next) => {
 
 const updateUserAdmin = async (req, res, next) => {
   try {
-    const { name, email, role, isActive, password } = req.body;
+    const { name, email, role, isActive, password, mustChangePassword } = req.body;
     const user = await User.findById(req.params.id);
     if (!user) return sendError(res, 'User not found', 404);
 
@@ -613,7 +643,13 @@ const updateUserAdmin = async (req, res, next) => {
     if (email) user.email = email.toLowerCase();
     if (role) user.role = role;
     if (isActive !== undefined) user.isActive = isActive;
-    if (password) user.password = password; // Will be hashed by pre-save hook
+    if (mustChangePassword !== undefined) user.mustChangePassword = mustChangePassword;
+    if (password) {
+      user.password = password; // Will be hashed by pre-save hook
+      if (mustChangePassword === undefined) {
+        user.mustChangePassword = true; // reset forces password change on next login
+      }
+    }
 
     await user.save();
     const userObj = user.toObject();

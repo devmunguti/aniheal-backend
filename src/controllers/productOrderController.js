@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const InventoryTransaction = require('../models/InventoryTransaction');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAction } = require('../services/auditService');
+const emailService = require('../services/emailService');
 
 const generateOrderNumber = () => {
   const rand = Math.floor(1000 + Math.random() * 9000);
@@ -87,6 +88,23 @@ const createOrder = async (req, res, next) => {
         totalAmount: order.totalAmount,
       },
     });
+
+    // 1. Send receipt email to customer (if email provided)
+    if (order.customerEmail) {
+      emailService
+        .sendOrderConfirmationEmail({
+          to: order.customerEmail,
+          order,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendOrderConfirmationEmail:', err.message));
+    }
+
+    // 2. Send internal order alert to store fulfillment desk
+    emailService
+      .sendOrderInternalAlertEmail({
+        order,
+      })
+      .catch((err) => console.error('[EMAIL ERROR] sendOrderInternalAlertEmail:', err.message));
 
     return sendSuccess(res, order, 'Product order submitted successfully', 201);
   } catch (err) {
@@ -204,6 +222,19 @@ const updateOrderStatus = async (req, res, next) => {
         paymentStatus: order.paymentStatus,
       },
     });
+
+    // Send customer dispatch / status update email if customer email exists
+    if (order.customerEmail && (orderStatus || notes)) {
+      emailService
+        .sendOrderStatusUpdateEmail({
+          to: order.customerEmail,
+          order,
+          previousStatus,
+          newStatus: order.orderStatus,
+          trackingNotes: order.notes,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendOrderStatusUpdateEmail:', err.message));
+    }
 
     return sendSuccess(res, order, 'Order status updated successfully');
   } catch (err) {

@@ -32,15 +32,15 @@ describe('Appointment Triage & Workflow Suite', () => {
       role: 'editor',
     });
 
-    const adminLogin = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'admin_triage@aniheal.co.ke', password: 'AdminPassword123!' });
-    adminToken = adminLogin.body.data.token;
+    const loginAndGetToken = async (email, password) => {
+      await request(app).post('/api/auth/login').send({ email, password });
+      const user = await User.findOne({ email }).select('+otpCode');
+      const res = await request(app).post('/api/auth/verify-otp').send({ email, otp: user.otpCode });
+      return res.body.data.token;
+    };
 
-    const editorLogin = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'officer@aniheal.co.ke', password: 'OfficerPassword123!' });
-    editorToken = editorLogin.body.data.token;
+    adminToken = await loginAndGetToken('admin_triage@aniheal.co.ke', 'AdminPassword123!');
+    editorToken = await loginAndGetToken('officer@aniheal.co.ke', 'OfficerPassword123!');
   });
 
   after(async () => {

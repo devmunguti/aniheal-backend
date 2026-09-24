@@ -38,25 +38,28 @@ const seedData = async () => {
 
     // 1. SuperAdmin User
     console.log('Seeding SuperAdmin user...');
-    await User.deleteMany({ email: 'admin@aniheal.co.ke' });
-    await User.create({
-      name: 'Dr. AniHeal SuperAdmin',
-      email: 'admin@aniheal.co.ke',
-      password: 'AniHeal2025!', // will be hashed by pre-save hook
-      role: 'superadmin',
-      isActive: true,
-    });
-    console.log(' SuperAdmin created: admin@aniheal.co.ke / AniHeal2025!');
+    await User.deleteMany({ email: { $in: ['admin@aniheal.co.ke', 'karushopstore@gmail.com', 'hello.aniheal@gmail.com'] } });
+    await User.create([
+      {
+        name: 'AniHeal SuperAdmin',
+        email: 'hello.aniheal@gmail.com',
+        password: 'password123',
+        role: 'superadmin',
+        isActive: true,
+        mustChangePassword: true,
+      },
+    ]);
+    console.log('✔ SuperAdmin created: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
 
     // 2. Global Website Settings
     console.log('Seeding Website Settings...');
     await WebsiteSettings.deleteMany({});
     await WebsiteSettings.create({
-      siteName: 'AniHeal Veterinary Solutions',
+      siteName: 'AniHeal Vetspace solutions',
       tagline: 'Veterinary Solutions',
       licenseNumber: 'KVB/PR/2025/0842',
       licenseDescription:
-        'Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
+        'Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
       primaryPhone: '+254 700 264 432',
       hotlinePhone: '+254 700 ANIHEAL',
       emergencyPhone: '+254 700 264 432',
@@ -78,7 +81,7 @@ const seedData = async () => {
         weekday: 'Mon–Sat 07:00–18:00',
         emergency: '24/7 Emergency Response',
       },
-      metaTitle: 'AniHeal Veterinary Solutions | KVB Accredited',
+      metaTitle: 'AniHeal Vetspace solutions',
       metaDescription:
         'AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics, preventative medicine, and precision livestock production across Kenya under One Health.',
     });
@@ -92,7 +95,7 @@ const seedData = async () => {
         section: 'homepage',
         title: 'Professional Consultancy You Can Trust',
         subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
-        badge: 'KENYA VETERINARY BOARD ACCREDITED',
+        badge: 'ANIHEAL VETSPACE SLTNS LTD',
         body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
         metadata: {
           metrics: [
@@ -882,9 +885,9 @@ const seedData = async () => {
     // 13. Sample Vet Daily Clinical Logs
     console.log('Seeding Vet Clinical Logs...');
     await VetLog.deleteMany({});
-    const adminUser = await User.findOne({ email: 'admin@aniheal.co.ke' });
+    const adminUser = await User.findOne({ email: 'hello.aniheal@gmail.com' }) || await User.findOne({});
     await VetLog.create({
-      vetUser: adminUser._id,
+      vetUser: adminUser?._id,
       vetName: 'Dr. Joseph Ndungu (BVM)',
       owner: sampleOwner._id,
       farmerName: sampleOwner.name,
@@ -941,7 +944,7 @@ const seedData = async () => {
           'AniHeal has partnered with ILRI to deploy mobile point-of-care PCR diagnostics and surveillance for Brucellosis, Rift Valley Fever, and Anthrax across pastoral hubs in Rift Valley and Northern Kenya.',
         content: `### Strengthening East Africa's One Health Defense
 
-The interface between livestock, wildlife, and human populations across Kenya's arid and semi-arid lands presents critical zoonotic disease surveillance challenges. In partnership with the **International Livestock Research Institute (ILRI)** and the **Kenya Veterinary Board (KVB)**, AniHeal Veterinary Solutions has rolled out an integrated field surveillance initiative.
+The interface between livestock, wildlife, and human populations across Kenya's arid and semi-arid lands presents critical zoonotic disease surveillance challenges. In partnership with the **International Livestock Research Institute (ILRI)** and the **Kenya Veterinary Board (KVB)**, AniHeal Vetspace solutions has rolled out an integrated field surveillance initiative.
 
 #### Core Objectives & Field Methodology
 1. **Point-of-Care Diagnostics:** Equipping AniHeal ambulatory units with rapid isothermal LAMP and portable PCR kits for on-the-spot pathogen detection.

@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const { sendSuccess, sendError } = require('../utils/response');
 const { logAction } = require('../services/auditService');
+const emailService = require('../services/emailService');
 
 const generateTicketRef = () => {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -86,6 +87,23 @@ const createAppointment = async (req, res, next) => {
       },
     });
 
+    // 1. Dispatch triage receipt email to farmer (if email provided)
+    if (appointment.email) {
+      emailService
+        .sendAppointmentConfirmationEmail({
+          to: appointment.email,
+          appointment,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendAppointmentConfirmationEmail:', err.message));
+    }
+
+    // 2. Dispatch internal triage alert to clinic admin desk
+    emailService
+      .sendAppointmentInternalAlertEmail({
+        appointment,
+      })
+      .catch((err) => console.error('[EMAIL ERROR] sendAppointmentInternalAlertEmail:', err.message));
+
     return sendSuccess(res, appointment, 'Triage appointment submitted successfully', 201);
   } catch (err) {
     next(err);
@@ -151,6 +169,8 @@ const updateAppointmentStatus = async (req, res, next) => {
       return sendError(res, 'Appointment ticket not found', 404);
     }
 
+    const previousStatus = appointment.status;
+
     if (status) {
       if (!allowedStatuses.includes(status)) {
         return sendError(res, `Invalid status. Allowed values: ${allowedStatuses.join(', ')}`, 400);
@@ -177,6 +197,20 @@ const updateAppointmentStatus = async (req, res, next) => {
         assignedOfficer: appointment.assignedOfficer,
       },
     });
+
+    // Dispatch status update email if status changed or officer assigned and email exists
+    if (appointment.email && (status || assignedOfficer || clinicalNotes)) {
+      emailService
+        .sendAppointmentStatusUpdateEmail({
+          to: appointment.email,
+          appointment,
+          previousStatus,
+          newStatus: appointment.status,
+          assignedClinician: appointment.assignedOfficer,
+          clinicalNotes: appointment.clinicalNotes,
+        })
+        .catch((err) => console.error('[EMAIL ERROR] sendAppointmentStatusUpdateEmail:', err.message));
+    }
 
     return sendSuccess(res, appointment, 'Appointment status updated');
   } catch (err) {

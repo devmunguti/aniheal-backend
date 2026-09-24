@@ -41,20 +41,16 @@ describe('Security, RBAC & API Hardening Suite', () => {
       role: 'user',
     });
 
-    const saLogin = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'sec_admin@aniheal.co.ke', password: 'Password123!' });
-    superadminToken = saLogin.body.data.token;
+    const loginAndGetToken = async (email, password) => {
+      await request(app).post('/api/auth/login').send({ email, password });
+      const user = await User.findOne({ email }).select('+otpCode');
+      const res = await request(app).post('/api/auth/verify-otp').send({ email, otp: user.otpCode });
+      return res.body.data.token;
+    };
 
-    const edLogin = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'sec_editor@aniheal.co.ke', password: 'Password123!' });
-    editorToken = edLogin.body.data.token;
-
-    const uLogin = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'sec_user@aniheal.co.ke', password: 'Password123!' });
-    userToken = uLogin.body.data.token;
+    superadminToken = await loginAndGetToken('sec_admin@aniheal.co.ke', 'Password123!');
+    editorToken = await loginAndGetToken('sec_editor@aniheal.co.ke', 'Password123!');
+    userToken = await loginAndGetToken('sec_user@aniheal.co.ke', 'Password123!');
   });
 
   after(async () => {
@@ -99,7 +95,7 @@ describe('Security, RBAC & API Hardening Suite', () => {
     const settingsRes = await request(app)
       .put('/api/admin/settings')
       .set('Authorization', `Bearer ${superadminToken}`)
-      .send({ siteName: 'AniHeal Veterinary Solutions' });
+      .send({ siteName: 'AniHeal Vetspace solutions' });
     assert.equal(settingsRes.status, 200);
 
     const auditRes = await request(app)

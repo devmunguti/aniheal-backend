@@ -4,7 +4,7 @@ const websiteSettingsSchema = new mongoose.Schema(
   {
     siteName: {
       type: String,
-      default: 'AniHeal Veterinary Solutions',
+      default: 'AniHeal Vetspace solutions',
       trim: true,
     },
     tagline: {
@@ -17,7 +17,7 @@ const websiteSettingsSchema = new mongoose.Schema(
     },
     licenseDescription: {
       type: String,
-      default: 'Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
+      default: 'Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
     },
     primaryPhone: {
       type: String,
@@ -67,15 +67,35 @@ const websiteSettingsSchema = new mongoose.Schema(
       facebook: { type: String, default: '#' },
       twitter: { type: String, default: '#' },
       instagram: { type: String, default: '#' },
+      linkedin: { type: String, default: '#' },
+      youtube: { type: String, default: '#' },
+      tiktok: { type: String, default: '#' },
       whatsapp: { type: String, default: 'https://wa.me/254700264432' },
     },
     operatingHours: {
       weekday: { type: String, default: 'Mon–Sat 07:00–18:00' },
       emergency: { type: String, default: '24/7 Emergency Response' },
     },
+    notificationEmails: {
+      triageAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
+      orderAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
+      insuranceAlertEmail: {
+        type: String,
+        default: 'hello.aniheal@gmail.com',
+        trim: true,
+      },
+    },
     metaTitle: {
       type: String,
-      default: 'AniHeal Veterinary Solutions | KVB Accredited',
+      default: 'AniHeal Vetspace solutions',
     },
     metaDescription: {
       type: String,

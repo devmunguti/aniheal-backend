@@ -12,27 +12,35 @@ const Collaboration = require('../models/Collaboration');
 const runSeed = async () => {
   try {
     // 1. SuperAdmin User
-    const existingAdmin = await User.findOne({ email: 'admin@aniheal.co.ke' });
-    if (!existingAdmin) {
+    let superAdmin = await User.findOne({ email: 'hello.aniheal@gmail.com' });
+    if (!superAdmin) {
       await User.create({
-        name: 'Dr. AniHeal SuperAdmin',
-        email: 'admin@aniheal.co.ke',
-        password: 'AniHeal2025!',
+        name: 'AniHeal SuperAdmin',
+        email: 'hello.aniheal@gmail.com',
+        password: 'password123',
         role: 'superadmin',
         isActive: true,
+        mustChangePassword: true,
       });
-      console.log('✔ SuperAdmin created: admin@aniheal.co.ke / AniHeal2025!');
+      console.log('✔ SuperAdmin created: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
+    } else {
+      superAdmin.password = 'password123';
+      superAdmin.role = 'superadmin';
+      superAdmin.isActive = true;
+      superAdmin.mustChangePassword = true;
+      await superAdmin.save();
+      console.log('✔ SuperAdmin updated: hello.aniheal@gmail.com / password123 (Temporary - Must Change Password)');
     }
 
     // 2. Settings
     const existingSettings = await WebsiteSettings.findOne();
     if (!existingSettings) {
       await WebsiteSettings.create({
-        siteName: 'AniHeal Veterinary Solutions',
+        siteName: 'AniHeal Vetspace solutions',
         tagline: 'Veterinary Solutions',
         licenseNumber: 'KVB/PR/2025/0842',
         licenseDescription:
-          'Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
+          'Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
         primaryPhone: '+254 700 264 432',
         hotlinePhone: '+254 700 ANIHEAL',
         emergencyPhone: '+254 700 264 432',
@@ -54,7 +62,7 @@ const runSeed = async () => {
           weekday: 'Mon–Sat 07:00–18:00',
           emergency: '24/7 Emergency Response',
         },
-        metaTitle: 'AniHeal Veterinary Solutions | KVB Accredited',
+        metaTitle: 'AniHeal Vetspace solutions',
         metaDescription:
           'AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics, preventative medicine, and precision livestock production across Kenya under One Health.',
       });
@@ -69,7 +77,7 @@ const runSeed = async () => {
           section: 'homepage',
           title: 'Professional Consultancy You Can Trust',
           subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
-          badge: 'KENYA VETERINARY BOARD ACCREDITED',
+          badge: 'ANIHEAL VETSPACE SLTNS LTD',
           body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
           metadata: {
             metrics: [
@@ -140,6 +148,24 @@ const runSeed = async () => {
           title: 'Need Immediate Clinical Assistance on Your Farm?',
           subtitle: 'Rapid Response Service',
           body: 'Our field veterinary team provides real-time WhatsApp visual triage, emergency ambulatory dispatch, and immediate drug dosage guidance.',
+        },
+        {
+          key: 'fleet_vignette',
+          section: 'contact',
+          title: 'Ambulatory Fleet In Action',
+          badge: 'Cold Chain + Ultrasound Equipped',
+          metadata: {
+            items: [
+              {
+                name: 'Mobile Lab Fleet #3',
+                image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCdMipf_wHgAU1jJHBgzZ-6Av_FOWhaYTe_R9-pUVcedYopdfsqz05h2pLUvunESqUTs5qQ7PE4qFASeBGVWfVSZvspJFb4JPAt5kk3WO0D9tu2HlST18cJ3ygPKcaYjKN3hJrJ8lyFMrr5ozKgdT1YM4lsEa7ZpWUMDO1_Y_AY42lHfrKIfvOn6JZx30CnGUq2rCrWC_AYy4ozTsbtvRFnM5Bb1gl2r4BcFoGaHWLvSF3AtJW7KU2B',
+              },
+              {
+                name: 'Rift Valley Herd Triage',
+                image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAuKHTURKZQOaYcfibAeMONBddKmwPREFD5iGH_CqqzH9tQiNalVh80yYdaD0v6ZSKMqKPTXd_0lYTdqHA5_Cwdky_5a9BRoHxuJSzbVZM74updOwNHCc1AXfrfkW8MxahBdJocfbPQmqZzW6CoJQiaYRUeQWT0LznnWguWv_dvn3UzlMalVH4Xa9Iag7GOCQmDzydia2FrRZvqduy8IrpPc0j6sLiA3Lp11DHLJ1WDkXDuT04mMW0v',
+              },
+            ],
+          },
         },
       ]);
     }
@@ -671,55 +697,8 @@ const runSeed = async () => {
       ]);
     }
 
-    // 10. Collaborations & Partnerships
-    const collabCount = await Collaboration.countDocuments();
-    if (collabCount === 0) {
-      await Collaboration.insertMany([
-        {
-          header: 'One Health Zoonotic Surveillance with ILRI & KVB',
-          slug: 'one-health-zoonotic-surveillance-ilri',
-          partnerName: 'International Livestock Research Institute (ILRI) & Kenya Veterinary Board',
-          category: 'One Health Research',
-          imageUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-          summary:
-            'AniHeal has partnered with ILRI to deploy mobile point-of-care PCR diagnostics and surveillance for Brucellosis, Rift Valley Fever, and Anthrax across pastoral hubs in Rift Valley and Northern Kenya.',
-          content: `Strengthening East Africa's One Health Defense. The interface between livestock, wildlife, and human populations across Kenya presents critical zoonotic disease surveillance challenges. In partnership with ILRI and KVB, AniHeal has rolled out an integrated field surveillance initiative.`,
-          externalUrl: 'https://www.ilri.org',
-          featured: true,
-          status: 'published',
-          tags: ['One Health', 'Zoonosis', 'ILRI', 'AMR Surveillance', 'KVB'],
-        },
-        {
-          header: 'Dairy Yield Optimization & Cold Chain Alliance with Kenya Dairy Board',
-          slug: 'dairy-yield-optimization-kdb-alliance',
-          partnerName: 'Kenya Dairy Board & Central Kenya Dairy Farmers Cooperative',
-          category: 'Livestock & Dairy Sector',
-          imageUrl: 'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?auto=format&fit=crop&w=1200&q=80',
-          summary:
-            'A strategic collaborative initiative reducing subclinical mastitis incidence by 38% through digitized udder health scoring, farm-gate bulk milk somatic cell counts, and nutrition formulation.',
-          content: `Revolutionizing Smallholder Dairy Economics. Subclinical mastitis remains a large hidden financial drain for commercial and smallholder dairy farmers. Through collaboration with KDB, AniHeal instituted the Clean Milk & High Yield Protocol.`,
-          externalUrl: 'https://www.kdb.go.ke',
-          featured: true,
-          status: 'published',
-          tags: ['Dairy', 'Mastitis', 'Kenya Dairy Board', 'Nutrition'],
-        },
-        {
-          header: 'Veterinary Clinical Residency & Field Training with Egerton & UoN',
-          slug: 'veterinary-clinical-residency-egerton-uon',
-          partnerName: 'Egerton University Faculty of Veterinary Medicine & University of Nairobi',
-          category: 'Academic & Training',
-          imageUrl: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80',
-          summary:
-            'Hands-on ambulatory clinical rotations for senior veterinary students, immersing interns in ultrasonography, herd health triage, equine dental prophylaxis, and surgical emergency response.',
-          content: `Nurturing the Next Generation of Field Clinicians. Bridging academic veterinary theory with rigorous field practice is essential for building resilient animal healthcare systems.`,
-          externalUrl: 'https://www.egerton.ac.ke',
-          featured: false,
-          status: 'published',
-          tags: ['Veterinary Training', 'Residency', 'Egerton', 'UoN'],
-        },
-      ]);
-      console.log('✔ Default initial Collaborations seeded');
-    }
+    // 10. Collaborations & Partnerships (Managed dynamically by Admin)
+    // No mock collaborations inserted by default
 
     return true;
   } catch (error) {

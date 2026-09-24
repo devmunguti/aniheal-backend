@@ -4,7 +4,7 @@ const websiteSettingsSchema = new mongoose.Schema(
   {
     siteName: {
       type: String,
-      default: 'AniHeal Veterinary Solutions',
+      default: 'AniHeal Vetspace solutions',
       trim: true,
     },
     tagline: {
@@ -17,7 +17,7 @@ const websiteSettingsSchema = new mongoose.Schema(
     },
     licenseDescription: {
       type: String,
-      default: 'Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
+      default: 'Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
     },
     primaryPhone: {
       type: String,
@@ -95,7 +95,7 @@ const websiteSettingsSchema = new mongoose.Schema(
     },
     metaTitle: {
       type: String,
-      default: 'AniHeal Veterinary Solutions | KVB Accredited',
+      default: 'AniHeal Vetspace solutions',
     },
     metaDescription: {
       type: String,

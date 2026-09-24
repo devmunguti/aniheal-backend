@@ -95,7 +95,7 @@ describe('Security, RBAC & API Hardening Suite', () => {
     const settingsRes = await request(app)
       .put('/api/admin/settings')
       .set('Authorization', `Bearer ${superadminToken}`)
-      .send({ siteName: 'AniHeal Veterinary Solutions' });
+      .send({ siteName: 'AniHeal Vetspace solutions' });
     assert.equal(settingsRes.status, 200);
 
     const auditRes = await request(app)

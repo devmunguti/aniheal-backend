@@ -36,11 +36,11 @@ const runSeed = async () => {
     const existingSettings = await WebsiteSettings.findOne();
     if (!existingSettings) {
       await WebsiteSettings.create({
-        siteName: 'AniHeal Veterinary Solutions',
+        siteName: 'AniHeal Vetspace solutions',
         tagline: 'Veterinary Solutions',
         licenseNumber: 'KVB/PR/2025/0842',
         licenseDescription:
-          'Regulated Veterinary Practice License No. KVB/PR/2025/0842. Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
+          'Authorized for Mobile & Ambulatory Field Procedures, Clinical Diagnostics, and Veterinary Pharmacy.',
         primaryPhone: '+254 700 264 432',
         hotlinePhone: '+254 700 ANIHEAL',
         emergencyPhone: '+254 700 264 432',
@@ -62,7 +62,7 @@ const runSeed = async () => {
           weekday: 'Mon–Sat 07:00–18:00',
           emergency: '24/7 Emergency Response',
         },
-        metaTitle: 'AniHeal Veterinary Solutions | KVB Accredited',
+        metaTitle: 'AniHeal Vetspace solutions',
         metaDescription:
           'AniHeal is an accredited agro-veterinary enterprise advancing clinical diagnostics, preventative medicine, and precision livestock production across Kenya under One Health.',
       });
@@ -77,7 +77,7 @@ const runSeed = async () => {
           section: 'homepage',
           title: 'Professional Consultancy You Can Trust',
           subtitle: 'ACCREDITED KENYA VETERINARY CONSULTANCY',
-          badge: 'KENYA VETERINARY BOARD ACCREDITED',
+          badge: 'ANIHEAL VETSPACE SLTNS LTD',
           body: 'AniHeal veterinary consultancy works on providing sustainable animal related solutions in fields of veterinary medicine, One Health, animal husbandry and animal welfare.',
           metadata: {
             metrics: [

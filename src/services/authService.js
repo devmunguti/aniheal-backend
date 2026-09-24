@@ -13,7 +13,7 @@ const generateToken = (user) => {
       name: user.name,
     },
     jwtSecret,
-    { expiresIn: '24h' }
+    { expiresIn: '15m' }
   );
 };
 

@@ -219,7 +219,7 @@ const buildAccountCreatedEmailHtml = ({
     </h2>
     <p style="margin: 0 0 20px 0; color: #475569; font-size: 14px; line-height: 1.6;">
       Hello <strong>${recipientName || 'Team Member'}</strong>,<br>
-      An administrative staff account has been provisioned for you on the <strong>AniHeal Veterinary Solutions Clinical Management Platform</strong>.
+      An administrative staff account has been provisioned for you on the <strong>AniHeal Vetspace solutions Clinical Management Platform</strong>.
     </p>
 
     <!-- Credentials Card -->
@@ -386,7 +386,7 @@ const buildAppointmentConfirmationEmailHtml = ({ appointment }) => {
     </h2>
     <p style="margin: 0 0 20px 0; color: #475569; font-size: 14px; line-height: 1.6;">
       Dear <strong>${appointment.farmerName}</strong>,<br>
-      Thank you for contacting AniHeal Veterinary Solutions. Your triage appointment ticket has been received and routed to our mobile veterinary dispatch unit.
+      Thank you for contacting AniHeal Vetspace solutions. Your triage appointment ticket has been received and routed to our mobile veterinary dispatch unit.
     </p>
 
     <!-- Ticket Summary Card -->
@@ -644,7 +644,7 @@ const buildOrderConfirmationEmailHtml = ({ order }) => {
     </h2>
     <p style="margin: 0 0 20px 0; color: #475569; font-size: 14px; line-height: 1.6;">
       Dear <strong>${order.customerName}</strong>,<br>
-      Thank you for purchasing with AniHeal Veterinary Solutions. Your order has been registered and is being prepared for fulfillment.
+      Thank you for purchasing with AniHeal Vetspace solutions. Your order has been registered and is being prepared for fulfillment.
     </p>
 
     <!-- Itemized Table -->
